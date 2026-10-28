@@ -1,6 +1,4 @@
-# awaae001
-
-Play with projects, write code. Now and then, something else.
+~~A salted fish without a dream~~ A salted fish looking for one.
 
 <!-- BEGIN GENERATED -->
 ```console
@@ -17,4 +15,4 @@ $ gh pr list --author=awaae001 --state=merged -7
 Total commits 3,080 | Last year 1,544
 <!-- END GENERATED -->
 
-JavaScript · Go · Python · Rust · HTML · C++。
+JavaScript · Go · Python · Rust · C++.
