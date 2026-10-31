@@ -17,6 +17,15 @@ def gh(*args):
 def count(query):
     return gh("api", f"search/commits?q={quote(query)}&per_page=1")["total_count"]
 
+def total_stars():
+    stars, page = 0, 1
+    while True:
+        repos = gh("api", f"users/{USER}/repos?per_page=100&page={page}")
+        stars += sum(r["stargazers_count"] for r in repos if not r["fork"])
+        if len(repos) < 100:
+            return stars
+        page += 1
+
 search = (f'query{{search(query:"author:{USER} is:merged sort:created-desc",type:ISSUE,first:60)'
           "{nodes{...on PullRequest{number title mergedAt repository{nameWithOwner}}}}}")
 prs = sorted(gh("api", "graphql", "-f", f"query={search}")["data"]["search"]["nodes"],
@@ -32,7 +41,8 @@ for p in prs:
         break
 
 total = count(f"author:{USER}")
-recent = count(f"author:{USER} committer-date:>{date.today() - timedelta(days=365)}")
+recent = count(f"author:{USER} committer-date:>{date.today() - timedelta(days=30)}")
+stars = total_stars()
 
 text = README.read_text()
 begin = text.index(BEGIN) + len(BEGIN)
@@ -41,8 +51,7 @@ README.write_text(f"""{text[:begin]}
 $ gh pr list --author={USER} --state=merged -{len(rows)}
 {chr(10).join(rows)}
 ```
-
-Total commits {total:,} | Last year {recent:,}
+Total commits {total:,} | 30 days {recent:,} | Total stars {stars:,}
 
 <sub>记得用 `python3 update.py` 更新 README，上次是 {date.today()}。</sub>
 {text[text.index(END):]}""")
